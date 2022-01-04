@@ -9,24 +9,21 @@ import { UsersModule } from './users/users.module';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const cookieSession = require('cookie-session');
 
+const envFilePath = `.env.${process.env.NODE_ENV}`;
+const validationPipeCfg = {
+  provide: APP_PIPE,
+  useValue: new ValidationPipe({ whitelist: true }),
+};
+
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
-      envFilePath: `.env.${process.env.NODE_ENV}`,
-    }),
+    ConfigModule.forRoot({ isGlobal: true, envFilePath }),
     TypeOrmModule.forRoot(),
     AuthModule,
     UsersModule,
   ],
   controllers: [AppController],
-  providers: [
-    {
-      provide: APP_PIPE,
-      useValue: new ValidationPipe({ whitelist: true }),
-    },
-    AppService,
-  ],
+  providers: [validationPipeCfg, AppService],
 })
 export class AppModule {
   constructor(private configService: ConfigService) {}
